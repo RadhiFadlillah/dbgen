@@ -1,0 +1,8 @@
+# Exclude config
+.vscode/
+
+# Exclude development files
+query/
+
+# Exclude generated files
+_storage/
