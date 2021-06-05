@@ -23,10 +23,10 @@ func (p *Parser) processSelectQueries() ([]SelectQueryData, error) {
 		logrus.Printf("processing select query %s", queryName)
 
 		// Find parameters in SQL query
-		params, queryArgs := extractQueryParams(rawQuery.SQL)
+		sqlQuery, params, queryArgs := extractQueryParams(rawQuery.SQL)
 
 		// Execute select query
-		rows, err := p.TmpDB.NamedQuery(rawQuery.SQL, queryArgs)
+		rows, err := p.TmpDB.NamedQuery(sqlQuery, queryArgs)
 		if err != nil && err != sql.ErrNoRows {
 			err = fmt.Errorf("failed to run %s: %v", queryName, err)
 			return nil, err
@@ -43,7 +43,7 @@ func (p *Parser) processSelectQueries() ([]SelectQueryData, error) {
 		// Create query data for this table
 		query := SelectQueryData{
 			Name:         rawQuery.Name,
-			SQL:          rawQuery.SQL,
+			SQL:          sqlQuery,
 			Params:       params,
 			SingleResult: rawQuery.Type == GET,
 		}

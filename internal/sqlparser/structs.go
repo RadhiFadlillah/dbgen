@@ -74,6 +74,16 @@ type SelectQueryData struct {
 	SingleResult bool
 }
 
+// ExecQueryData is data for executable query that used to modify data.
+type ExecQueryData struct {
+	// Name is the name of query.
+	Name string
+	// Params is list of parameters used to modify data.
+	Params []Parameter
+	// SQL is the raw SQL query.
+	SQL string
+}
+
 // Column is data of database column.
 type Column struct {
 	// Name is the name of the column.

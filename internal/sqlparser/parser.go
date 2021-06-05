@@ -17,6 +17,7 @@ type Parser struct {
 	rawQueries    []RawQueryData
 	ddlQueries    []DdlQueryData
 	selectQueries []SelectQueryData
+	execQueries   []ExecQueryData
 
 	mapColumnsCount map[string]int
 	mapColumnsTable map[string][]string
@@ -50,6 +51,13 @@ func (p *Parser) Parse() error {
 		return err
 	}
 
+	// Process exec queries
+	p.execQueries, err = p.processExecQueries()
+	if err != nil {
+		err = fmt.Errorf("failed to process exec queries: %v", err)
+		return err
+	}
+
 	for _, query := range p.ddlQueries {
 		fmt.Println(query.TableName)
 		for _, col := range query.Columns {
@@ -59,13 +67,24 @@ func (p *Parser) Parse() error {
 	}
 
 	for _, query := range p.selectQueries {
-		fmt.Println(query.Name)
+		fmt.Println("SELECT", query.Name)
 		fmt.Println("RESULT:", query.ResultEntity)
 
 		fmt.Println("COLUMNS:")
 		for _, col := range query.Columns {
 			fmt.Println("-", col.Name, col.DbType, col.ScanType, col.Nullable)
 		}
+
+		fmt.Println("PARAMETERS:")
+		for _, param := range query.Params {
+			fmt.Println("*", param.Name, param.Required)
+		}
+
+		fmt.Println("===")
+	}
+
+	for _, query := range p.execQueries {
+		fmt.Println("EXEC", query.Name)
 
 		fmt.Println("PARAMETERS:")
 		for _, param := range query.Params {

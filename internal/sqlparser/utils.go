@@ -1,13 +1,15 @@
 package sqlparser
 
 // extractQueryParams extract parameters that used in a query, also possible arguments to fill the query.
-func extractQueryParams(sqlQuery string) ([]Parameter, map[string]interface{}) {
+func extractQueryParams(sqlQuery string) (string, []Parameter, map[string]interface{}) {
 	// Extract unique parameter names from query
 	var paramNames []string
 	queryArgs := make(map[string]interface{})
 	mapRequiredParam := make(map[string]bool)
 
-	for _, parts := range rxQueryParams.FindAllStringSubmatch(sqlQuery, -1) {
+	sqlQuery = rxQueryParams.ReplaceAllStringFunc(sqlQuery, func(s string) string {
+		parts := rxQueryParams.FindStringSubmatch(s)
+
 		paramName := parts[2]
 		paramRequired := parts[1] == "!"
 		if _, exist := mapRequiredParam[paramName]; !exist {
@@ -16,7 +18,8 @@ func extractQueryParams(sqlQuery string) ([]Parameter, map[string]interface{}) {
 
 		queryArgs[paramName] = 1
 		mapRequiredParam[paramName] = mapRequiredParam[paramName] || paramRequired
-	}
+		return ":" + paramName
+	})
 
 	// Convert param names to list of parameter
 	var params []Parameter
@@ -27,5 +30,5 @@ func extractQueryParams(sqlQuery string) ([]Parameter, map[string]interface{}) {
 		})
 	}
 
-	return params, queryArgs
+	return sqlQuery, params, queryArgs
 }
