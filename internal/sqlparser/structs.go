@@ -45,3 +45,25 @@ type RawQueryData struct {
 	// SourceLine is the line number where this query declared.
 	SourceLine int
 }
+
+// DdlQueryData is data for query that used to create tables.
+type DdlQueryData struct {
+	// TableName is the name of table that created using this DDL.
+	TableName string
+	// Columns is list of columns inside the created table.
+	Columns []Column
+	// SQL is the raw SQL query.
+	SQL string
+}
+
+// Column is data of database column.
+type Column struct {
+	// Name is the name of the column.
+	Name string
+	// DbType is the database system name of the column type, e.g. VARCHAR, INT, etc.
+	DbType string
+	// ScanType returns a Go type suitable for scanning into using Rows.Scan.
+	ScanType string
+	// Nullable specify whether a column can be null or not.
+	Nullable bool
+}

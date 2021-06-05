@@ -15,6 +15,7 @@ type Parser struct {
 	SrcDir string
 
 	rawQueries []RawQueryData
+	ddlQueries []DdlQueryData
 }
 
 func (p *Parser) Parse() error {
@@ -27,9 +28,18 @@ func (p *Parser) Parse() error {
 		return err
 	}
 
-	for _, query := range p.rawQueries {
-		fmt.Println(query.Type.Name(), query.Name)
-		fmt.Println(query.SQL)
+	// Process DDL queries
+	p.ddlQueries, err = p.processDdlQueries()
+	if err != nil {
+		err = fmt.Errorf("failed to parse sql files: %v", err)
+		return err
+	}
+
+	for _, query := range p.ddlQueries {
+		fmt.Println(query.TableName)
+		for _, col := range query.Columns {
+			fmt.Println("-", col.Name, col.DbType, col.ScanType, col.Nullable)
+		}
 		fmt.Println("===")
 	}
 
