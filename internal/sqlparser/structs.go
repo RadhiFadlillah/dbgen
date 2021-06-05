@@ -56,6 +56,24 @@ type DdlQueryData struct {
 	SQL string
 }
 
+// SelectQueryData is data for query that used to fetch data from database.
+type SelectQueryData struct {
+	// Name is the name of query.
+	Name string
+	// Columns is list of columns in fetched data.
+	Columns []Column
+	// Params is list of parameters used to fetch data.
+	Params []Parameter
+	// ResultEntity is the name of entity that will be used to store result of this query.
+	ResultEntity string
+	// InputEntity is the name of entity that will be used to store parameter for this query.
+	InputEntity string
+	// SQL is the raw SQL query.
+	SQL string
+	// SingleResult specify if this query return single row or multi rows.
+	SingleResult bool
+}
+
 // Column is data of database column.
 type Column struct {
 	// Name is the name of the column.
@@ -66,4 +84,12 @@ type Column struct {
 	ScanType string
 	// Nullable specify whether a column can be null or not.
 	Nullable bool
+}
+
+// Parameter is data for query parameter.
+type Parameter struct {
+	// Name is the name of the parameter.
+	Name string
+	// Required specify whether this parameter is required or not.
+	Required bool
 }

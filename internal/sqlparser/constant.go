@@ -3,8 +3,9 @@ package sqlparser
 import "regexp"
 
 var (
-	rxQueryProps = regexp.MustCompile(`(?i)([^\s:,]+)\s*:\s*([^\s:,]+)`)
-	rxTableName  = regexp.MustCompile(`(?i)CREATE\s+(?:TEMPORARY\s+)?TABLE\s+(?:IF\s+(?:NOT\s+)?EXISTS\s+)?(\S+)`)
+	rxQueryProps  = regexp.MustCompile(`(?i)([^\s:,]+)\s*:\s*([^\s:,]+)`)
+	rxQueryParams = regexp.MustCompile(`(?i)([!:])([\w_\d]+)`)
+	rxTableName   = regexp.MustCompile(`(?i)CREATE\s+(?:TEMPORARY\s+)?TABLE\s+(?:IF\s+(?:NOT\s+)?EXISTS\s+)?(\S+)`)
 )
 
 const sqlEnableForeignKey = `SET FOREIGN_KEY_CHECKS = 1`
