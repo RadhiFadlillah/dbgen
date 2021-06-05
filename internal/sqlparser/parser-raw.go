@@ -3,22 +3,46 @@ package sqlparser
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	fp "path/filepath"
 	"strings"
+
+	"github.com/iancoleman/strcase"
 )
 
-func (p *Parser) getSqlFiles() ([]string, error) {
-	var sqlPaths []string
-	err := fp.Walk(p.SrcDir, func(path string, info fs.FileInfo, err error) error {
-		if !info.IsDir() && fp.Ext(path) == ".sql" {
-			sqlPaths = append(sqlPaths, path)
-		}
-		return nil
-	})
+func (p *Parser) parseSqlFiles() ([]RawQueryData, error) {
+	// Get all files in src dir
+	sqlFiles, err := p.getSqlFiles()
+	if err != nil {
+		return nil, err
+	}
 
-	return sqlPaths, err
+	// Parse each SQL file
+	var rawQueries []RawQueryData
+	uniqueQueries := make(map[string]struct{})
+
+	for _, sqlFile := range sqlFiles {
+		queries, err := p.parseSqlFile(sqlFile)
+		if err != nil {
+			return nil, err
+		}
+
+		// Make sure each query only defined once
+		for _, query := range queries {
+			queryName := query.Type.Name() + query.Name
+			if _, exist := uniqueQueries[queryName]; exist {
+				querySource := fmt.Sprintf("%s:%d", query.SourceFile, query.SourceLine)
+				return nil, fmt.Errorf("%s redefined in %s", query.Name, querySource)
+			}
+
+			uniqueQueries[queryName] = struct{}{}
+			rawQueries = append(rawQueries, query)
+		}
+	}
+
+	return rawQueries, nil
 }
 
 func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
@@ -68,6 +92,26 @@ func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
 				query.Props[parts[1]] = parts[2]
 			}
 
+			// Find name and type of the query.
+			for key, value := range query.Props {
+				value = strcase.ToCamel(value)
+
+				switch key {
+				case "ddl":
+					query.Type, query.Name = DDL, "DdlCreate"+value
+				case "get":
+					query.Type, query.Name = GET, value
+				case "select":
+					query.Type, query.Name = SELECT, value
+				case "exec":
+					query.Type, query.Name = EXEC, value
+				}
+
+				if query.Type != 0 && query.Name != "" {
+					break
+				}
+			}
+
 			continue
 		}
 
@@ -78,4 +122,16 @@ func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
 	}
 
 	return allQueries, nil
+}
+
+func (p *Parser) getSqlFiles() ([]string, error) {
+	var sqlPaths []string
+	err := fp.Walk(p.SrcDir, func(path string, info fs.FileInfo, err error) error {
+		if !info.IsDir() && fp.Ext(path) == ".sql" {
+			sqlPaths = append(sqlPaths, path)
+		}
+		return nil
+	})
+
+	return sqlPaths, err
 }

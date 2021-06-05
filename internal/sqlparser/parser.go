@@ -1,6 +1,8 @@
 package sqlparser
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,21 +18,19 @@ type Parser struct {
 }
 
 func (p *Parser) Parse() error {
-	// Get all files in src dir
-	sqlFiles, err := p.getSqlFiles()
+	var err error
+
+	// Parse all SQL files
+	p.rawQueries, err = p.parseSqlFiles()
 	if err != nil {
+		err = fmt.Errorf("failed to parse sql files: %v", err)
 		return err
 	}
 
-	// Parse each SQL file
-	var rawQueries []RawQueryData
-	for _, sqlFile := range sqlFiles {
-		queries, err := p.parseSqlFile(sqlFile)
-		if err != nil {
-			return err
-		}
-
-		rawQueries = append(rawQueries, queries...)
+	for _, query := range p.rawQueries {
+		fmt.Println(query.Type.Name(), query.Name)
+		fmt.Println(query.SQL)
+		fmt.Println("===")
 	}
 
 	return nil
