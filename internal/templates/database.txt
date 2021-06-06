@@ -1,0 +1,48 @@
+package {{.package}}
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
+
+// OpenDatabase open database on specified data source.
+func OpenDatabase(dataSourceName string) (db *sqlx.DB, err error) {
+	// Connect to database
+	db, err = sqlx.Connect("mysql", dataSourceName)
+	if err != nil {
+		err = fmt.Errorf("failed to open database: %v", err)
+		return
+	}
+	db.SetConnMaxLifetime(time.Minute)
+
+	// If error happened, close database before returning result
+	defer func() {
+		if err != nil {
+			if db != nil {
+				db.Close()
+			}
+			db = nil
+		}
+	}()
+
+	// Generate tables
+	{{range $ddl := .ddlQueries}}
+		_, err = db.Exec({{$ddl.Name}})
+		if err != nil {
+			err = fmt.Errorf("failed to create table \"{{$ddl.TableName}}\": %v", err)
+			return
+		}
+
+	{{end}}
+
+	// Return database and error (if any)
+	return
+}
+
+{{range $ddl := .ddlQueries}}
+const {{$ddl.Name}} = `
+{{$ddl.SQL}}`
+
+{{end}}

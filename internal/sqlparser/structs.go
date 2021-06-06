@@ -48,6 +48,8 @@ type RawQueryData struct {
 
 // DdlQueryData is data for query that used to create tables.
 type DdlQueryData struct {
+	// Name is the name of query.
+	Name string
 	// TableName is the name of table that created using this DDL.
 	TableName string
 	// Columns is list of columns inside the created table.

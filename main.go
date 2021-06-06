@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"text/template"
 	"time"
 
 	"github.com/RadhiFadlillah/dbgen/internal/generator"
@@ -29,19 +28,17 @@ func main() {
 		SrcDir: "query",
 	}
 
-	_, _, _, err = ps.Parse()
-	checkError(err)
-
-	// Prepare templates for code generator
-	templatePattern := "internal/templates/*.txt"
-	templates, err := template.ParseFS(templateFiles, templatePattern)
+	ddlQueries, selectQueries, execQueries, err := ps.Parse()
 	checkError(err)
 
 	// Generate code
 	gen := generator.Generator{
-		DstDir:      ".output",
-		PackageName: "storage",
-		Templates:   templates,
+		DstDir:        ".output",
+		PackageName:   "storage",
+		TemplateFiles: templateFiles,
+		DdlQueries:    ddlQueries,
+		SelectQueries: selectQueries,
+		ExecQueries:   execQueries,
 	}
 
 	err = gen.Run()

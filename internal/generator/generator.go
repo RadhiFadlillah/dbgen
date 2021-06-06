@@ -1,11 +1,13 @@
 package generator
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	fp "path/filepath"
 	"text/template"
 
+	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,14 +17,28 @@ type Generator struct {
 	DstDir string
 	// PackageName is the name of package for the generated code.
 	PackageName string
-	// Templates is the templates used for generating code.
-	Templates *template.Template
+	// TemplateFiles is files for the templates used for generating code.
+	TemplateFiles embed.FS
+	// DdlQueries is data of DDL queries that will be generated.
+	DdlQueries []sqlparser.DdlQueryData
+	// SelectQueries is data of SELECT and GET queries that will be generated.
+	SelectQueries []sqlparser.SelectQueryData
+	// ExecQueries is data of EXEC queries that will be generated.
+	ExecQueries []sqlparser.ExecQueryData
+
+	templates *template.Template
 }
 
 // Run execute the generator.
 func (g *Generator) Run() error {
+	// Prepare templates
+	err := g.prepareTemplates()
+	if err != nil {
+		return fmt.Errorf("failed to prepare templates: %v", err)
+	}
+
 	// Make sure output directory exist
-	err := os.RemoveAll(g.DstDir)
+	err = os.RemoveAll(g.DstDir)
 	if err != nil {
 		return fmt.Errorf("failed to clean dst dir: %v", err)
 	}
@@ -38,14 +54,30 @@ func (g *Generator) Run() error {
 		return fmt.Errorf("failed to generate code for accessor: %v", err)
 	}
 
+	err = g.generateOpenDatabase()
+	if err != nil {
+		return fmt.Errorf("failed to generate code for opening db: %v", err)
+	}
+
 	return nil
 }
 
 // generateAccessor generates code for database accessor.
 func (g *Generator) generateAccessor() error {
-	logrus.Println("generate accessor code")
+	logrus.Println("generate code for accessor")
 
 	dstPath := fp.Join(g.DstDir, "00-accessor.go")
 	data := map[string]string{"package": g.PackageName}
 	return g.writeCode(dstPath, "accessor.txt", data)
+}
+
+// generateOpenDatabase generates code for opening database.
+func (g *Generator) generateOpenDatabase() error {
+	logrus.Println("generate code for opening database")
+
+	dstPath := fp.Join(g.DstDir, "00-database.go")
+	return g.writeCode(dstPath, "database.txt", map[string]interface{}{
+		"package":    g.PackageName,
+		"ddlQueries": g.DdlQueries,
+	})
 }

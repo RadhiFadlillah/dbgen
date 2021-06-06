@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/iancoleman/strcase"
 	"github.com/sirupsen/logrus"
 )
 
@@ -110,6 +111,7 @@ func (p *Parser) processDdlQueries(rawQueries []RawQueryData) ([]DdlQueryData, e
 
 		// Create query data for this table
 		query := DdlQueryData{
+			Name:      "ddlCreate" + strcase.ToCamel(tableName),
 			TableName: tableName,
 			SQL:       rawQuery.SQL,
 		}
