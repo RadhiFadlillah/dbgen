@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (p *Parser) processExecQueries() ([]ExecQueryData, error) {
+func (p *Parser) processExecQueries(rawQueries []RawQueryData) ([]ExecQueryData, error) {
 	// Prepare processed queries
 	var execQueries []ExecQueryData
 
@@ -19,7 +19,7 @@ func (p *Parser) processExecQueries() ([]ExecQueryData, error) {
 	defer tx.Rollback()
 
 	// Check each raw query
-	for _, rawQuery := range p.rawQueries {
+	for _, rawQuery := range rawQueries {
 		// If it's not EXEC, skip
 		if rawQuery.Type != EXEC {
 			continue

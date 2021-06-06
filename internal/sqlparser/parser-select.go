@@ -7,12 +7,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (p *Parser) processSelectQueries() ([]SelectQueryData, error) {
+func (p *Parser) processSelectQueries(rawQueries []RawQueryData) ([]SelectQueryData, error) {
 	// Prepare processed queries
 	var selectQueries []SelectQueryData
 
 	// Check each raw query
-	for _, rawQuery := range p.rawQueries {
+	for _, rawQuery := range rawQueries {
 		// If it's not SELECT or GET, skip
 		if rawQuery.Type != SELECT && rawQuery.Type != GET {
 			continue

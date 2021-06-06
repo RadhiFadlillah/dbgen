@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (p *Parser) processDdlQueries() ([]DdlQueryData, error) {
+func (p *Parser) processDdlQueries(rawQueries []RawQueryData) ([]DdlQueryData, error) {
 	// Prepare processed queries
 	var ddlQueries []DdlQueryData
 
@@ -45,7 +45,7 @@ func (p *Parser) processDdlQueries() ([]DdlQueryData, error) {
 	}()
 
 	// Check each raw query
-	for _, rawQuery := range p.rawQueries {
+	for _, rawQuery := range rawQueries {
 		// If it's not DDL, skip
 		if rawQuery.Type != DDL {
 			continue

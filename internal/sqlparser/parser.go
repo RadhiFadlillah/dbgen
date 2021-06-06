@@ -14,85 +14,42 @@ type Parser struct {
 	// SrcDir is source directory that contains SQL files.
 	SrcDir string
 
-	rawQueries    []RawQueryData
-	ddlQueries    []DdlQueryData
-	selectQueries []SelectQueryData
-	execQueries   []ExecQueryData
-
 	mapColumnsCount map[string]int
 	mapColumnsTable map[string][]string
 }
 
-func (p *Parser) Parse() error {
-	var err error
-
+func (p *Parser) Parse() (ddlQueries []DdlQueryData, selectQueries []SelectQueryData, execQueries []ExecQueryData, err error) {
 	// Parse all SQL files
-	p.rawQueries, err = p.parseSqlFiles()
+	rawQueries, err := p.parseSqlFiles()
 	if err != nil {
 		err = fmt.Errorf("failed to parse sql files: %v", err)
-		return err
+		return
 	}
 
 	// Process DDL queries
-	p.ddlQueries, err = p.processDdlQueries()
+	ddlQueries, err = p.processDdlQueries(rawQueries)
 	if err != nil {
 		err = fmt.Errorf("failed to process ddl queries: %v", err)
-		return err
+		return
 	}
 
 	// Store table columns to map for faster access
-	p.mapColumnsTable = p.mapColumnsToTable()
-	p.mapColumnsCount = p.mapTableColumnsCount()
+	p.mapColumnsTable = p.mapColumnsToTable(ddlQueries)
+	p.mapColumnsCount = p.mapTableToColumnsCount(ddlQueries)
 
 	// Process select queries
-	p.selectQueries, err = p.processSelectQueries()
+	selectQueries, err = p.processSelectQueries(rawQueries)
 	if err != nil {
 		err = fmt.Errorf("failed to process select queries: %v", err)
-		return err
+		return
 	}
 
 	// Process exec queries
-	p.execQueries, err = p.processExecQueries()
+	execQueries, err = p.processExecQueries(rawQueries)
 	if err != nil {
 		err = fmt.Errorf("failed to process exec queries: %v", err)
-		return err
+		return
 	}
 
-	for _, query := range p.ddlQueries {
-		fmt.Println(query.TableName)
-		for _, col := range query.Columns {
-			fmt.Println("-", col.Name, col.DbType, col.ScanType, col.Nullable)
-		}
-		fmt.Println("===")
-	}
-
-	for _, query := range p.selectQueries {
-		fmt.Println("SELECT", query.Name)
-		fmt.Println("RESULT:", query.ResultEntity)
-
-		fmt.Println("COLUMNS:")
-		for _, col := range query.Columns {
-			fmt.Println("-", col.Name, col.DbType, col.ScanType, col.Nullable)
-		}
-
-		fmt.Println("PARAMETERS:")
-		for _, param := range query.Params {
-			fmt.Println("*", param.Name, param.Required)
-		}
-
-		fmt.Println("===")
-	}
-
-	for _, query := range p.execQueries {
-		fmt.Println("EXEC", query.Name)
-
-		fmt.Println("PARAMETERS:")
-		for _, param := range query.Params {
-			fmt.Println("*", param.Name, param.Required)
-		}
-
-		fmt.Println("===")
-	}
-
-	return nil
+	return
 }

@@ -12,22 +12,22 @@ import (
 )
 
 func main() {
-	// Connect to database
-	db, err := openDB()
+	// Open temporary database
+	tmpDB, err := openTmpDB()
 	checkError(err)
-	defer db.Close()
+	defer tmpDB.Close()
 
-	// Create parser
+	// Parse SQL files
 	ps := sqlparser.Parser{
-		TmpDB:  db,
+		TmpDB:  tmpDB,
 		SrcDir: "query",
 	}
 
-	err = ps.Parse()
+	_, _, _, err = ps.Parse()
 	checkError(err)
 }
 
-func openDB() (*sqlx.DB, error) {
+func openTmpDB() (*sqlx.DB, error) {
 	// Connect to database
 	dataSource := fmt.Sprintf("%s:@tcp(%s)/%s", "radhi", "127.0.0.1:3306", "training")
 	db, err := sqlx.Connect("mysql", dataSource)

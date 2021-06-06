@@ -6,10 +6,10 @@ import (
 	"sort"
 )
 
-// mapTableColumnsCount map each table to its columns count.
-func (p *Parser) mapTableColumnsCount() map[string]int {
+// mapTableToColumnsCount map each table to its columns count.
+func (p *Parser) mapTableToColumnsCount(ddlQueries []DdlQueryData) map[string]int {
 	mapColumnsCount := make(map[string]int)
-	for _, ddlQuery := range p.ddlQueries {
+	for _, ddlQuery := range ddlQueries {
 		mapColumnsCount[ddlQuery.TableName] = len(ddlQuery.Columns)
 	}
 
@@ -18,9 +18,9 @@ func (p *Parser) mapTableColumnsCount() map[string]int {
 
 // mapColumnsToTable map columns to tables, which later can be used
 // to match a set of columns into one of the table.
-func (p *Parser) mapColumnsToTable() map[string][]string {
+func (p *Parser) mapColumnsToTable(ddlQueries []DdlQueryData) map[string][]string {
 	mapColumnsTable := make(map[string][]string)
-	for _, ddlQuery := range p.ddlQueries {
+	for _, ddlQuery := range ddlQueries {
 		for _, col := range ddlQuery.Columns {
 			colID := fmt.Sprintf("%s-%s", col.Name, col.DbType)
 			mapColumnsTable[colID] = append(mapColumnsTable[colID], ddlQuery.TableName)
