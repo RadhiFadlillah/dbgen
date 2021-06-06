@@ -2,14 +2,20 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
+	"text/template"
 	"time"
 
+	"github.com/RadhiFadlillah/dbgen/internal/generator"
 	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
+
+//go:embed internal/templates/*
+var templateFiles embed.FS
 
 func main() {
 	// Open temporary database
@@ -24,6 +30,21 @@ func main() {
 	}
 
 	_, _, _, err = ps.Parse()
+	checkError(err)
+
+	// Prepare templates for code generator
+	templatePattern := "internal/templates/*.txt"
+	templates, err := template.ParseFS(templateFiles, templatePattern)
+	checkError(err)
+
+	// Generate code
+	gen := generator.Generator{
+		DstDir:      ".output",
+		PackageName: "storage",
+		Templates:   templates,
+	}
+
+	err = gen.Run()
 	checkError(err)
 }
 

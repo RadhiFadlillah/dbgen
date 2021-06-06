@@ -5,4 +5,4 @@
 query/
 
 # Exclude generated files
-_storage/
+.output/
