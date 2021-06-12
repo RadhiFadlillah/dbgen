@@ -10,6 +10,14 @@ func extractQueryParams(sqlQuery string) (string, []Parameter, map[string]interf
 	sqlQuery = rxQueryParams.ReplaceAllStringFunc(sqlQuery, func(s string) string {
 		parts := rxQueryParams.FindStringSubmatch(s)
 
+		// If this parameter is escaped, then skip it
+		switch parts[1] {
+		case "!!":
+			return "!" + parts[2]
+		case "::":
+			return s
+		}
+
 		paramName := parts[2]
 		paramRequired := parts[1] == "!"
 		if _, exist := mapRequiredParam[paramName]; !exist {
