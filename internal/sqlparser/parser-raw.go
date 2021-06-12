@@ -121,6 +121,16 @@ func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
 		}
 	}
 
+	// Save the last query if exists
+	if len(query.Props) > 0 && sqlBuffer.Len() > 0 {
+		sql := sqlBuffer.String()
+		sql = strings.TrimSpace(sql)
+		sql = strings.TrimSuffix(sql, ";")
+
+		query.SQL = sql
+		allQueries = append(allQueries, query)
+	}
+
 	return allQueries, nil
 }
 
