@@ -17,10 +17,19 @@ func OpenDatabase(dataSourceName string) (db *sqlx.DB, err error) {
 	}
 	db.SetConnMaxLifetime(time.Minute)
 
-	// If error happened, close database before returning result
+	// Disable foreign keys
+	_, err = db.Exec(`SET FOREIGN_KEY_CHECKS = 0`)
+	if err != nil {
+		err = fmt.Errorf("failed to disable foreign key: %v", err)
+		return
+	}
+
+	// If error happened, close database and enable foreign keys
+	// before returning result
 	defer func() {
 		if err != nil {
 			if db != nil {
+				db.Exec(`SET FOREIGN_KEY_CHECKS = 1`)
 				db.Close()
 			}
 			db = nil
