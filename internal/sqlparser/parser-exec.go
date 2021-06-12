@@ -10,13 +10,25 @@ func (p *Parser) processExecQueries(rawQueries []RawQueryData) ([]ExecQueryData,
 	// Prepare processed queries
 	var execQueries []ExecQueryData
 
-	// Start transaction
+	// Start transaction and disable foreign keys
 	tx, err := p.TmpDB.Beginx()
 	if err != nil {
 		err = fmt.Errorf("failed to start transaction: %v", err)
 		return nil, err
 	}
-	defer tx.Rollback()
+
+	defer func() {
+		tx.Exec(sqlEnableForeignKey)
+		tx.Rollback()
+	}()
+
+	// Disable foreign keys
+	logrus.Println("disabling foreign keys")
+	_, err = tx.Exec(sqlDisableForeignKey)
+	if err != nil {
+		err = fmt.Errorf("failed to disable foreign key: %v", err)
+		return nil, err
+	}
 
 	// Check each raw query
 	for _, rawQuery := range rawQueries {
@@ -35,8 +47,7 @@ func (p *Parser) processExecQueries(rawQueries []RawQueryData) ([]ExecQueryData,
 		// Try to execute query
 		_, err := tx.NamedExec(sqlQuery, queryArgs)
 		if err != nil {
-			err = fmt.Errorf("failed to execute %s: %v", queryName, err)
-			return nil, err
+			logrus.Warnf("failed to execute %s: %v", queryName, err)
 		}
 
 		// Create query data for this table
