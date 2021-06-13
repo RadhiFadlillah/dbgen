@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/RadhiFadlillah/dbgen/internal/generator"
 	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 )
 
 //go:embed internal/templates/*
@@ -33,12 +33,19 @@ func main() {
 
 	// Generate code
 	gen := generator.Generator{
-		DstDir:        ".output",
-		PackageName:   "storage",
-		TemplateFiles: templateFiles,
-		DdlQueries:    ddlQueries,
-		SelectQueries: selectQueries,
-		ExecQueries:   execQueries,
+		DstDir:              "storage",
+		PackageName:         "storage",
+		TemplateFiles:       templateFiles,
+		DdlQueries:          ddlQueries,
+		SelectQueries:       selectQueries,
+		ExecQueries:         execQueries,
+		ColumnTypeConverter: columnTypeConverter,
+		AdditionalImports: []string{
+			"time",
+			"encoding/json",
+			"gopkg.in/guregu/null.v4",
+			"github.com/shopspring/decimal",
+		},
 	}
 
 	err = gen.Run()
@@ -57,8 +64,46 @@ func openTmpDB() (*sqlx.DB, error) {
 	return db, nil
 }
 
+func columnTypeConverter(column sqlparser.Column) string {
+	dbType := strings.ToUpper(column.DbType)
+
+	if column.Nullable {
+		switch dbType {
+		case "INT", "BIGINT":
+			return "null.Int"
+		case "BINARY", "VARBINARY", "VARCHAR":
+			return "null.String"
+		case "DATE", "TIME", "DATETIME", "TIMESTAMP":
+			return "mysql.NullTime"
+		case "DECIMAL":
+			return "decimal.NullDecimal"
+		case "TEXT":
+			return "json.RawMessage"
+		case "TINYINT":
+			return "null.Bool"
+		}
+	} else {
+		switch dbType {
+		case "INT", "BIGINT":
+			return "int"
+		case "BINARY", "VARBINARY", "VARCHAR":
+			return "string"
+		case "DATE", "TIME", "DATETIME", "TIMESTAMP":
+			return "time.Time"
+		case "DECIMAL":
+			return "decimal.Decimal"
+		case "TEXT":
+			return "json.RawMessage"
+		case "TINYINT":
+			return "bool"
+		}
+	}
+
+	return column.ScanType
+}
+
 func checkError(err error) {
 	if err != nil && err != sql.ErrNoRows {
-		logrus.Panicln(err)
+		panic(err)
 	}
 }

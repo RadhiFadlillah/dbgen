@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"os/exec"
 	fp "path/filepath"
 	"text/template"
 
@@ -25,6 +26,13 @@ type Generator struct {
 	SelectQueries []sqlparser.SelectQueryData
 	// ExecQueries is data of EXEC queries that will be generated.
 	ExecQueries []sqlparser.ExecQueryData
+	// ColumnTypeConverter is map of function to convert column's database type
+	// into a suitable Go type.
+	ColumnTypeConverter func(column sqlparser.Column) string
+	// AdditionalImports is list of additional packages that should be imported
+	// in the generated code, for example because of the additional types that
+	// specified in ColumnTypeConverter.
+	AdditionalImports []string
 
 	templates *template.Template
 }
@@ -59,7 +67,13 @@ func (g *Generator) Run() error {
 		return fmt.Errorf("failed to generate code for opening db: %v", err)
 	}
 
-	return nil
+	err = g.generateStructs()
+	if err != nil {
+		return fmt.Errorf("failed to generate code for structs: %v", err)
+	}
+
+	// Format the generated code
+	return g.formatCode()
 }
 
 // generateAccessor generates code for database accessor.
@@ -80,4 +94,27 @@ func (g *Generator) generateOpenDatabase() error {
 		"package":    g.PackageName,
 		"ddlQueries": g.DdlQueries,
 	})
+}
+
+// generateStructs generates code for structs.
+func (g *Generator) generateStructs() error {
+	logrus.Println("generate code for structs")
+
+	templateData := map[string]interface{}{
+		"package":           g.PackageName,
+		"ddlQueries":        g.DdlQueries,
+		"selectQueries":     g.SelectQueries,
+		"execQueries":       g.ExecQueries,
+		"additionalImports": g.AdditionalImports,
+	}
+
+	dstPath := fp.Join(g.DstDir, "00-structs.go")
+	return g.writeCode(dstPath, "structs.txt", templateData)
+}
+
+// formatCode formats the generated code using goimports.
+func (g *Generator) formatCode() error {
+	logrus.Println("format the generated code")
+	cmd := exec.Command("goimports", "-w", g.DstDir)
+	return cmd.Run()
 }

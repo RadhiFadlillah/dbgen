@@ -2,19 +2,28 @@ package generator
 
 import (
 	"bytes"
-	"go/format"
 	"io/ioutil"
 	"os"
 	"text/template"
 
+	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	"github.com/iancoleman/strcase"
 )
 
 func (g *Generator) prepareTemplates() (err error) {
 	globPattern := "internal/templates/*.txt"
 	funcMap := template.FuncMap{
-		"strToCamel": func(s string) string {
+		"camel": func(s string) string {
 			return strcase.ToCamel(s)
+		},
+		"lowerCamel": func(s string) string {
+			return strcase.ToLowerCamel(s)
+		},
+		"columnType": func(col sqlparser.Column) string {
+			if g.ColumnTypeConverter == nil {
+				return col.ScanType
+			}
+			return g.ColumnTypeConverter(col)
 		},
 	}
 
@@ -30,11 +39,5 @@ func (g *Generator) writeCode(dstPath, templateName string, data interface{}) er
 		return err
 	}
 
-	// Format code
-	bt, err := format.Source(buffer.Bytes())
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(dstPath, bt, os.ModePerm)
+	return ioutil.WriteFile(dstPath, buffer.Bytes(), os.ModePerm)
 }

@@ -37,7 +37,7 @@ func OpenDatabase(dataSourceName string) (db *sqlx.DB, err error) {
 	}()
 
 	// Generate tables
-	{{range $ddl := .ddlQueries}}
+	{{range $ddl := .ddlQueries -}}
 		_, err = db.Exec({{$ddl.Name}})
 		if err != nil {
 			err = fmt.Errorf("failed to create table \"{{$ddl.TableName}}\": %v", err)

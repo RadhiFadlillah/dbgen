@@ -1,0 +1,76 @@
+package {{.package}}
+
+import (
+	x "github.com/go-sql-driver/mysql"
+	"database/sql"
+
+	{{range $import := .additionalImports -}}
+	"{{$import}}"
+	{{end -}}
+)
+
+{{if gt (len .ddlQueries) 0}}
+// Structs for DDL queries.
+
+	{{range $query := .ddlQueries -}}
+		{{if gt (len $query.Columns) 0}}
+			{{$structName := camel $query.TableName -}}
+			// {{$structName}} contains data for table "{{$query.TableName}}".
+			type {{$structName}} struct {
+				{{range $col := $query.Columns -}}
+					{{$fieldName := camel $col.Name -}}
+					{{$jsonName := lowerCamel $col.Name -}}
+					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+				{{end -}}
+			}
+		{{end}}
+	{{end}}
+{{end}}
+
+{{if gt (len .selectQueries) 0}}
+// Structs for SELECT queries.
+
+	{{range $query := .selectQueries -}}
+		{{if gt (len $query.Columns) 0}}
+			{{$structName := (print (camel $query.Name) "Result") -}}
+			// {{$structName}} contains result of select query "{{$query.Name}}".
+			type {{$structName}} struct {
+				{{range $col := $query.Columns -}}
+					{{$fieldName := camel $col.Name -}}
+					{{$jsonName := lowerCamel $col.Name -}}
+					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+				{{end -}}
+			}
+		{{end}}
+
+		{{if gt (len $query.Params) 0}}
+			{{$structName := (print (camel $query.Name) "Params") -}}
+			// {{$structName}} is input parameter for select query "{{$query.Name}}".
+			type {{$structName}} struct {
+				{{range $col := $query.Params -}}
+					{{$fieldName := camel $col.Name -}}
+					{{$jsonName := lowerCamel $col.Name -}}
+					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+				{{end -}}
+			}
+		{{end}}
+	{{end}}
+{{end}}
+
+{{if gt (len .execQueries) 0}}
+// Structs for EXEC queries.
+
+	{{range $query := .execQueries -}}
+		{{if gt (len $query.Params) 0}}
+			{{$structName := (print (camel $query.Name) "Params") -}}
+			// {{$structName}} is input parameter for exec query "{{$query.Name}}".
+			type {{$structName}} struct {
+				{{range $col := $query.Params -}}
+					{{$fieldName := camel $col.Name -}}
+					{{$jsonName := lowerCamel $col.Name -}}
+					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+				{{end -}}
+			}
+		{{end}}
+	{{end}}
+{{end}}
