@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Parser is the object that used to parse SQL files.
-type Parser struct {
+// SqlParser is the object that used to parse SQL files.
+type SqlParser struct {
 	// TmpDB is temporary database that used to test queries.
 	// WARNING: make sure it's not pointed to production database.
 	TmpDB *sqlx.DB
@@ -18,7 +18,7 @@ type Parser struct {
 	mapColumnsTable map[string][]string
 }
 
-func (p *Parser) Parse() (ddlQueries []DdlQueryData, selectQueries []SelectQueryData, execQueries []ExecQueryData, err error) {
+func (p *SqlParser) Parse() (ddlQueries []DdlQueryData, selectQueries []SelectQueryData, execQueries []ExecQueryData, err error) {
 	// Parse all SQL files
 	rawQueries, err := p.parseSqlFiles()
 	if err != nil {

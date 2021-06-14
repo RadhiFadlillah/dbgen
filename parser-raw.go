@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func (p *Parser) parseSqlFiles() ([]RawQueryData, error) {
+func (p *SqlParser) parseSqlFiles() ([]RawQueryData, error) {
 	// Get all files in src dir
 	sqlFiles, err := p.getSqlFiles()
 	if err != nil {
@@ -45,7 +45,7 @@ func (p *Parser) parseSqlFiles() ([]RawQueryData, error) {
 	return rawQueries, nil
 }
 
-func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
+func (p *SqlParser) parseSqlFile(path string) ([]RawQueryData, error) {
 	// Open file
 	f, err := os.Open(path)
 	if err != nil {
@@ -134,7 +134,7 @@ func (p *Parser) parseSqlFile(path string) ([]RawQueryData, error) {
 	return allQueries, nil
 }
 
-func (p *Parser) getSqlFiles() ([]string, error) {
+func (p *SqlParser) getSqlFiles() ([]string, error) {
 	var sqlPaths []string
 	err := fp.Walk(p.SrcDir, func(path string, info fs.FileInfo, err error) error {
 		if !info.IsDir() && fp.Ext(path) == ".sql" {

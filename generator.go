@@ -1,4 +1,4 @@
-package generator
+package dbgen
 
 import (
 	"embed"
@@ -8,9 +8,11 @@ import (
 	fp "path/filepath"
 	"text/template"
 
-	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	"github.com/sirupsen/logrus"
 )
+
+//go:embed internal/templates/*
+var templateFiles embed.FS
 
 // Generator is object to generate the code for database storage.
 type Generator struct {
@@ -18,17 +20,15 @@ type Generator struct {
 	DstDir string
 	// PackageName is the name of package for the generated code.
 	PackageName string
-	// TemplateFiles is files for the templates used for generating code.
-	TemplateFiles embed.FS
 	// DdlQueries is data of DDL queries that will be generated.
-	DdlQueries []sqlparser.DdlQueryData
+	DdlQueries []DdlQueryData
 	// SelectQueries is data of SELECT and GET queries that will be generated.
-	SelectQueries []sqlparser.SelectQueryData
+	SelectQueries []SelectQueryData
 	// ExecQueries is data of EXEC queries that will be generated.
-	ExecQueries []sqlparser.ExecQueryData
+	ExecQueries []ExecQueryData
 	// ColumnTypeConverter is map of function to convert column's database type
 	// into a suitable Go type.
-	ColumnTypeConverter func(column sqlparser.Column) string
+	ColumnTypeConverter func(column Column) string
 	// AdditionalImports is list of additional packages that should be imported
 	// in the generated code, for example because of the additional types that
 	// specified in ColumnTypeConverter.

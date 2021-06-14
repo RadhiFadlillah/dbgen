@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import "regexp"
 

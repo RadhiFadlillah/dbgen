@@ -1,4 +1,4 @@
-package generator
+package dbgen
 
 import (
 	"bytes"
@@ -6,7 +6,6 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
 	"github.com/iancoleman/strcase"
 )
 
@@ -19,7 +18,7 @@ func (g *Generator) prepareTemplates() (err error) {
 		"lowerCamel": func(s string) string {
 			return strcase.ToLowerCamel(s)
 		},
-		"columnType": func(col sqlparser.Column) string {
+		"columnType": func(col Column) string {
 			if g.ColumnTypeConverter == nil {
 				return col.ScanType
 			}
@@ -27,7 +26,7 @@ func (g *Generator) prepareTemplates() (err error) {
 		},
 	}
 
-	g.templates, err = template.New("dbgen").Funcs(funcMap).ParseFS(g.TemplateFiles, globPattern)
+	g.templates, err = template.New("dbgen").Funcs(funcMap).ParseFS(templateFiles, globPattern)
 	return
 }
 

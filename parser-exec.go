@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (p *Parser) processExecQueries(rawQueries []RawQueryData) ([]ExecQueryData, error) {
+func (p *SqlParser) processExecQueries(rawQueries []RawQueryData) ([]ExecQueryData, error) {
 	// Prepare processed queries
 	var execQueries []ExecQueryData
 

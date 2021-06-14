@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (p *Parser) processDdlQueries(rawQueries []RawQueryData) ([]DdlQueryData, error) {
+func (p *SqlParser) processDdlQueries(rawQueries []RawQueryData) ([]DdlQueryData, error) {
 	// Prepare processed queries
 	var ddlQueries []DdlQueryData
 

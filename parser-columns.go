@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // mapTableToColumnsCount map each table to its columns count.
-func (p *Parser) mapTableToColumnsCount(ddlQueries []DdlQueryData) map[string]int {
+func (p *SqlParser) mapTableToColumnsCount(ddlQueries []DdlQueryData) map[string]int {
 	mapColumnsCount := make(map[string]int)
 	for _, ddlQuery := range ddlQueries {
 		mapColumnsCount[ddlQuery.TableName] = len(ddlQuery.Columns)
@@ -18,7 +18,7 @@ func (p *Parser) mapTableToColumnsCount(ddlQueries []DdlQueryData) map[string]in
 
 // mapColumnsToTable map columns to tables, which later can be used
 // to match a set of columns into one of the table.
-func (p *Parser) mapColumnsToTable(ddlQueries []DdlQueryData) map[string][]string {
+func (p *SqlParser) mapColumnsToTable(ddlQueries []DdlQueryData) map[string][]string {
 	mapColumnsTable := make(map[string][]string)
 	for _, ddlQuery := range ddlQueries {
 		for _, col := range ddlQuery.Columns {
@@ -31,7 +31,7 @@ func (p *Parser) mapColumnsToTable(ddlQueries []DdlQueryData) map[string][]strin
 }
 
 // findSuitableTable look for table that contains all specified column.
-func (p *Parser) findSuitableTable(columns []Column, expectation ...string) string {
+func (p *SqlParser) findSuitableTable(columns []Column, expectation ...string) string {
 	// Find all tables that contains said columns
 	tableCandidates := make(map[string]int)
 	for _, col := range columns {

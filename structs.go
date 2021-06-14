@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 // QueryType is the type of the query.
 type QueryType uint8

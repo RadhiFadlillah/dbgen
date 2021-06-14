@@ -1,4 +1,4 @@
-package sqlparser
+package dbgen
 
 // extractQueryParams extract parameters that used in a query, also possible arguments to fill the query.
 func extractQueryParams(sqlQuery string) (string, []Parameter, map[string]interface{}) {

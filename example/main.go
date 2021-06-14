@@ -2,19 +2,14 @@ package main
 
 import (
 	"database/sql"
-	"embed"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/RadhiFadlillah/dbgen/internal/generator"
-	"github.com/RadhiFadlillah/dbgen/internal/sqlparser"
+	"github.com/RadhiFadlillah/dbgen"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
-
-//go:embed internal/templates/*
-var templateFiles embed.FS
 
 func main() {
 	// Open temporary database
@@ -23,7 +18,7 @@ func main() {
 	defer tmpDB.Close()
 
 	// Parse SQL files
-	ps := sqlparser.Parser{
+	ps := dbgen.SqlParser{
 		TmpDB:  tmpDB,
 		SrcDir: "query",
 	}
@@ -32,10 +27,9 @@ func main() {
 	checkError(err)
 
 	// Generate code
-	gen := generator.Generator{
+	gen := dbgen.Generator{
 		DstDir:              "storage",
 		PackageName:         "storage",
-		TemplateFiles:       templateFiles,
 		DdlQueries:          ddlQueries,
 		SelectQueries:       selectQueries,
 		ExecQueries:         execQueries,
@@ -64,7 +58,7 @@ func openTmpDB() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func columnTypeConverter(column sqlparser.Column) string {
+func columnTypeConverter(column dbgen.Column) string {
 	dbType := strings.ToUpper(column.DbType)
 
 	if column.Nullable {
