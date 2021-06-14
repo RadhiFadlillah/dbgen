@@ -77,6 +77,11 @@ func (g *Generator) Run() error {
 		return fmt.Errorf("failed to generate code for select queries: %v", err)
 	}
 
+	err = g.generateExec()
+	if err != nil {
+		return fmt.Errorf("failed to generate code for exec queries: %v", err)
+	}
+
 	// Format the generated code
 	return g.formatCode()
 }
@@ -129,6 +134,20 @@ func (g *Generator) generateSelect() error {
 
 	dstPath := fp.Join(g.DstDir, "select.go")
 	return g.writeCode(dstPath, "select.txt", templateData)
+}
+
+// generateExec generates code for exec queries.
+func (g *Generator) generateExec() error {
+	logrus.Println("generate code for exec queries")
+
+	templateData := map[string]interface{}{
+		"package":           g.PackageName,
+		"execQueries":       g.ExecQueries,
+		"additionalImports": g.AdditionalImports,
+	}
+
+	dstPath := fp.Join(g.DstDir, "exec.go")
+	return g.writeCode(dstPath, "exec.txt", templateData)
 }
 
 // formatCode formats the generated code using goimports.

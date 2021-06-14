@@ -57,7 +57,7 @@ import (
 {{range $query := .selectQueries -}}
 	{{$funcName := camel $query.Name -}}
 	{{$sqlName := print "sql" $funcName -}}
-	// Stmt{{$funcName}} is used to prepare select query "{{$query.Name}}"
+	// Stmt{{$funcName}} is used to prepare select query "{{$query.Name}}".
 	func Stmt{{$funcName}}(acc Accessor) (*sqlx.NamedStmt, error) {
 		return acc.PrepareNamed({{$sqlName}})
 	}

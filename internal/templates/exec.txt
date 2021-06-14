@@ -1,0 +1,53 @@
+package {{.package}}
+
+import (
+	"database/sql"
+	"github.com/jmoiron/sqlx"
+	{{range $import := .additionalImports -}}
+	"{{$import}}"
+	{{end -}}
+)
+
+{{range $query := .execQueries -}}
+	{{$funcName := camel $query.Name -}}
+	{{$sqlName := print "sql" $funcName -}}
+	{{$argsType := print $funcName "Args" -}}
+	{{$sqlxFuncArgs := ""}}
+	{{$sqlxFuncName := "Get"}}
+	
+	// {{$funcName}} is wrapper for exec query "{{$query.Name}}".
+	{{if eq (len $query.Params) 0 -}}
+		func {{$funcName}}(acc Accessor) (sql.Result, error) {
+			return acc.Exec({{$sqlName}})
+		}
+	{{else -}}
+		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
+			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)
+			if err != nil {
+				return nil, err
+			}
+
+			query, args, err = sqlx.In(query, args...)
+			if err != nil {
+				return nil, err
+			}
+
+			return acc.Exec(query)
+		}
+	{{end}}
+{{end}}
+
+{{range $query := .execQueries -}}
+	{{$funcName := camel $query.Name -}}
+	{{$sqlName := print "sql" $funcName -}}
+	// Stmt{{$funcName}} is used to prepare exec query "{{$query.Name}}".
+	func Stmt{{$funcName}}(acc Accessor) (*sqlx.NamedStmt, error) {
+		return acc.PrepareNamed({{$sqlName}})
+	}
+{{end}}
+
+{{range $query := .execQueries -}}
+const sql{{camel $query.Name}} = `
+{{$query.SQL}}`
+
+{{end}}
