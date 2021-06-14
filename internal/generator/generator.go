@@ -72,6 +72,11 @@ func (g *Generator) Run() error {
 		return fmt.Errorf("failed to generate code for structs: %v", err)
 	}
 
+	err = g.generateSelect()
+	if err != nil {
+		return fmt.Errorf("failed to generate code for select queries: %v", err)
+	}
+
 	// Format the generated code
 	return g.formatCode()
 }
@@ -80,7 +85,7 @@ func (g *Generator) Run() error {
 func (g *Generator) generateAccessor() error {
 	logrus.Println("generate code for accessor")
 
-	dstPath := fp.Join(g.DstDir, "00-accessor.go")
+	dstPath := fp.Join(g.DstDir, "accessor.go")
 	data := map[string]string{"package": g.PackageName}
 	return g.writeCode(dstPath, "accessor.txt", data)
 }
@@ -89,7 +94,7 @@ func (g *Generator) generateAccessor() error {
 func (g *Generator) generateOpenDatabase() error {
 	logrus.Println("generate code for opening database")
 
-	dstPath := fp.Join(g.DstDir, "00-database.go")
+	dstPath := fp.Join(g.DstDir, "database.go")
 	return g.writeCode(dstPath, "database.txt", map[string]interface{}{
 		"package":    g.PackageName,
 		"ddlQueries": g.DdlQueries,
@@ -108,8 +113,22 @@ func (g *Generator) generateStructs() error {
 		"additionalImports": g.AdditionalImports,
 	}
 
-	dstPath := fp.Join(g.DstDir, "00-structs.go")
+	dstPath := fp.Join(g.DstDir, "structs.go")
 	return g.writeCode(dstPath, "structs.txt", templateData)
+}
+
+// generateSelect generates code for select queries.
+func (g *Generator) generateSelect() error {
+	logrus.Println("generate code for select queries")
+
+	templateData := map[string]interface{}{
+		"package":           g.PackageName,
+		"selectQueries":     g.SelectQueries,
+		"additionalImports": g.AdditionalImports,
+	}
+
+	dstPath := fp.Join(g.DstDir, "select.go")
+	return g.writeCode(dstPath, "select.txt", templateData)
 }
 
 // formatCode formats the generated code using goimports.

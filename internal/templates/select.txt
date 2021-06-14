@@ -1,0 +1,70 @@
+package {{.package}}
+
+import (
+	"strings"
+	"database/sql"
+	"github.com/jmoiron/sqlx"
+	{{range $import := .additionalImports -}}
+	"{{$import}}"
+	{{end -}}
+)
+
+{{range $query := .selectQueries -}}
+	{{$funcName := camel $query.Name -}}
+	{{$sqlName := print "sql" $funcName -}}
+	{{$argsType := print $funcName "Args" -}}
+	{{$resultType := print $funcName "Result" -}}
+	{{$sqlxFuncArgs := ""}}
+	{{$sqlxFuncName := "Get"}}
+	
+	{{if not $query.SingleResult}}
+		{{$sqlxFuncName = "Select"}}
+		{{$resultType = print "[]" $resultType}}
+	{{end}}
+	
+	// {{$funcName}} is wrapper for select query "{{$query.Name}}".
+	{{if eq (len $query.Params) 0 -}}
+		func {{$funcName}}(acc Accessor, additionalQueries ...string) (res {{$resultType}}, err error) {
+			query := {{$sqlName}}
+	{{else -}}
+		{{$sqlxFuncArgs = ", args..." -}}
+		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...string) (res {{$resultType}}, err error) {
+			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)
+			if err != nil {
+				return
+			}
+
+			query, args, err = sqlx.In(query, args...)
+			if err != nil {
+				return
+			}
+	{{end}}
+
+		if len(additionalQueries) > 0 {
+			query += " " + strings.Join(additionalQueries, " ")
+		}
+
+		err = acc.{{$sqlxFuncName}}(&res, query {{$sqlxFuncArgs}})
+		if err != nil && err != sql.ErrNoRows {
+			return
+		}
+	
+		err = nil
+		return
+	}
+{{end}}
+
+{{range $query := .selectQueries -}}
+	{{$funcName := camel $query.Name -}}
+	{{$sqlName := print "sql" $funcName -}}
+	// Stmt{{$funcName}} is used to prepare select query "{{$query.Name}}"
+	func Stmt{{$funcName}}(acc Accessor) (*sqlx.NamedStmt, error) {
+		return acc.PrepareNamed({{$sqlName}})
+	}
+{{end}}
+
+{{range $query := .selectQueries -}}
+const sql{{camel $query.Name}} = `
+{{$query.SQL}}`
+
+{{end}}
