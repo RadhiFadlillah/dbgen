@@ -44,7 +44,7 @@ import (
 			}
 		{{end}}
 
-		{{if gt (len $query.Params) 0}}
+		{{if gt (len $query.Params) 1}}
 			{{$structName := (print (camel $query.Name) "Args") -}}
 			// {{$structName}} is input parameter for select query "{{$query.Name}}".
 			type {{$structName}} struct {
@@ -62,7 +62,7 @@ import (
 // Structs for EXEC queries.
 
 	{{range $query := .execQueries -}}
-		{{if gt (len $query.Params) 0}}
+		{{if gt (len $query.Params) 1}}
 			{{$structName := (print (camel $query.Name) "Args") -}}
 			// {{$structName}} is input parameter for exec query "{{$query.Name}}".
 			type {{$structName}} struct {

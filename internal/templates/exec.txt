@@ -23,7 +23,16 @@ import (
 			return acc.Exec({{$sqlName}})
 		}
 	{{else -}}
-		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
+		{{if eq (len $query.Params) 1 -}}
+			{{$paramName := (index $query.Params 0).Name -}}
+			func {{$funcName}}(acc Accessor, {{lowerCamel $paramName}} interface{}) (sql.Result, error) {
+				namedArgs := map[string]interface{}{
+					"{{$paramName}}": {{lowerCamel $paramName}},
+				}
+		{{else -}}
+			func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
+		{{end}}
+
 			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)
 			if err != nil {
 				return nil, err
