@@ -3,6 +3,7 @@
 package {{.package}}
 
 import (
+	"fmt"
 	"database/sql"
 	"github.com/jmoiron/sqlx"
 	{{range $import := .additionalImports -}}
@@ -24,14 +25,30 @@ import (
 		}
 	{{else -}}
 		{{if eq (len $query.Params) 1 -}}
-			{{$paramName := (index $query.Params 0).Name -}}
-			func {{$funcName}}(acc Accessor, {{lowerCamel $paramName}} interface{}) (sql.Result, error) {
+			{{$param := (index $query.Params 0) -}}
+			{{$paramName := lowerCamel $param.Name -}}
+			func {{$funcName}}(acc Accessor, {{$paramName}} interface{}) (sql.Result, error) {
+				{{if $param.Required -}}
+					if isEmpty({{$paramName}}) {
+						return nil, fmt.Errorf("parameter \"{{$param.Name}}\" must not empty")
+					}
+
+				{{end -}}
 				namedArgs := map[string]interface{}{
-					"{{$paramName}}": {{lowerCamel $paramName}},
+					"{{$param.Name}}": {{$paramName}},
 				}
 
 		{{else -}}
 			func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
+				{{range $param := $query.Params -}}
+				{{if $param.Required -}}
+					{{$paramName := camel $param.Name -}}
+					if isEmpty(namedArgs.{{$paramName}}) {
+						return nil, fmt.Errorf("parameter \"{{$param.Name}}\" must not empty")
+					}
+
+				{{end -}}
+				{{end -}}
 		{{end -}}
 
 			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)

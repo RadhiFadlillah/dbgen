@@ -5,8 +5,11 @@ package {{.package}}
 import (
 	"context"
 	"database/sql"
+	"reflect"
+	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/shopspring/decimal"
 )
 
 // Accessor is interface for accessing storage. It's used to match either sqlx.Tx or sqlx.DB.
@@ -32,4 +35,16 @@ type Accessor interface {
 	Rebind(query string) string
 	Select(dest interface{}, query string, args ...interface{}) error
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+}
+
+// isEmpty check if the specified interface is empty or not.
+func isEmpty(i interface{}) bool {
+	switch val := i.(type) {
+	case decimal.Decimal:
+		return val.IsZero()
+	case time.Time:
+		return val.IsZero()
+	default:
+		return reflect.ValueOf(x).IsZero()
+	}
 }
