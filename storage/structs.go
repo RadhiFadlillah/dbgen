@@ -278,33 +278,9 @@ type CorrectionDetail struct {
 
 // Structs for SELECT queries.
 
-// LoadAccountResult contains result of select query "LoadAccount".
-type LoadAccountResult struct {
-	Id         int             `db:"id" json:"id"`
-	Username   string          `db:"username" json:"username"`
-	Name       string          `db:"name" json:"name"`
-	Permission json.RawMessage `db:"permission" json:"permission"`
-}
-
-// GetAccountByIdResult contains result of select query "GetAccountById".
-type GetAccountByIdResult struct {
-	Id         int             `db:"id" json:"id"`
-	Username   string          `db:"username" json:"username"`
-	Name       string          `db:"name" json:"name"`
-	Permission json.RawMessage `db:"permission" json:"permission"`
-}
-
 // GetAccountByIdArgs is input parameter for select query "GetAccountById".
 type GetAccountByIdArgs struct {
 	Id interface{} `db:"id" json:"id"`
-}
-
-// GetAccountByUsernameResult contains result of select query "GetAccountByUsername".
-type GetAccountByUsernameResult struct {
-	Id         int             `db:"id" json:"id"`
-	Username   string          `db:"username" json:"username"`
-	Name       string          `db:"name" json:"name"`
-	Permission json.RawMessage `db:"permission" json:"permission"`
 }
 
 // GetAccountByUsernameArgs is input parameter for select query "GetAccountByUsername".
@@ -349,28 +325,9 @@ type LoadCorrectionArgs struct {
 	Timezone interface{} `db:"timezone" json:"timezone"`
 }
 
-// GetCorrectionByIdResult contains result of select query "GetCorrectionById".
-type GetCorrectionByIdResult struct {
-	Id             int       `db:"id" json:"id"`
-	AccountId      int       `db:"account_id" json:"accountId"`
-	Description    string    `db:"description" json:"description"`
-	CorrectionTime time.Time `db:"correction_time" json:"correctionTime"`
-}
-
 // GetCorrectionByIdArgs is input parameter for select query "GetCorrectionById".
 type GetCorrectionByIdArgs struct {
 	Id interface{} `db:"id" json:"id"`
-}
-
-// LoadCustomerResult contains result of select query "LoadCustomer".
-type LoadCustomerResult struct {
-	Id         int    `db:"id" json:"id"`
-	Name       string `db:"name" json:"name"`
-	Identifier string `db:"identifier" json:"identifier"`
-	Phone      string `db:"phone" json:"phone"`
-	Address    string `db:"address" json:"address"`
-	City       string `db:"city" json:"city"`
-	Info       string `db:"info" json:"info"`
 }
 
 // LoadDeviceResult contains result of select query "LoadDevice".
@@ -396,20 +353,6 @@ type GetDeviceByIdentifierResult struct {
 // GetDeviceByIdentifierArgs is input parameter for select query "GetDeviceByIdentifier".
 type GetDeviceByIdentifierArgs struct {
 	Identifier interface{} `db:"identifier" json:"identifier"`
-}
-
-// LoadEmployeeResult contains result of select query "LoadEmployee".
-type LoadEmployeeResult struct {
-	Id        int    `db:"id" json:"id"`
-	Username  string `db:"username" json:"username"`
-	Name      string `db:"name" json:"name"`
-	Gender    string `db:"gender" json:"gender"`
-	Religion  string `db:"religion" json:"religion"`
-	Phone     string `db:"phone" json:"phone"`
-	Address   string `db:"address" json:"address"`
-	City      string `db:"city" json:"city"`
-	StartYear int    `db:"start_year" json:"startYear"`
-	EndYear   int    `db:"end_year" json:"endYear"`
 }
 
 // LoadProductInEventResult contains result of select query "LoadProductInEvent".
@@ -446,47 +389,14 @@ type LoadEventArgs struct {
 	Timezone interface{} `db:"timezone" json:"timezone"`
 }
 
-// GetEventResult contains result of select query "GetEvent".
-type GetEventResult struct {
-	Id         int             `db:"id" json:"id"`
-	Name       string          `db:"name" json:"name"`
-	Percentage decimal.Decimal `db:"percentage" json:"percentage"`
-	Rounding   decimal.Decimal `db:"rounding" json:"rounding"`
-	FixedPrice decimal.Decimal `db:"fixed_price" json:"fixedPrice"`
-	Start      time.Time       `db:"start" json:"start"`
-	End        time.Time       `db:"end" json:"end"`
-}
-
 // GetEventArgs is input parameter for select query "GetEvent".
 type GetEventArgs struct {
 	Id interface{} `db:"id" json:"id"`
 }
 
-// GetProductActiveEventResult contains result of select query "GetProductActiveEvent".
-type GetProductActiveEventResult struct {
-	Id         int             `db:"id" json:"id"`
-	Name       string          `db:"name" json:"name"`
-	Percentage decimal.Decimal `db:"percentage" json:"percentage"`
-	Rounding   decimal.Decimal `db:"rounding" json:"rounding"`
-	FixedPrice decimal.Decimal `db:"fixed_price" json:"fixedPrice"`
-	Start      time.Time       `db:"start" json:"start"`
-	End        time.Time       `db:"end" json:"end"`
-}
-
 // GetProductActiveEventArgs is input parameter for select query "GetProductActiveEvent".
 type GetProductActiveEventArgs struct {
 	ProductId interface{} `db:"product_id" json:"productId"`
-}
-
-// GetProductPastEventResult contains result of select query "GetProductPastEvent".
-type GetProductPastEventResult struct {
-	Id         int             `db:"id" json:"id"`
-	Name       string          `db:"name" json:"name"`
-	Percentage decimal.Decimal `db:"percentage" json:"percentage"`
-	Rounding   decimal.Decimal `db:"rounding" json:"rounding"`
-	FixedPrice decimal.Decimal `db:"fixed_price" json:"fixedPrice"`
-	Start      time.Time       `db:"start" json:"start"`
-	End        time.Time       `db:"end" json:"end"`
 }
 
 // GetProductPastEventArgs is input parameter for select query "GetProductPastEvent".
@@ -508,13 +418,6 @@ type LoadExpenseCategoryArgs struct {
 	ParentId interface{} `db:"parent_id" json:"parentId"`
 }
 
-// GetExpenseCategoryByIdResult contains result of select query "GetExpenseCategoryById".
-type GetExpenseCategoryByIdResult struct {
-	Id       int    `db:"id" json:"id"`
-	Name     string `db:"name" json:"name"`
-	ParentId int    `db:"parent_id" json:"parentId"`
-}
-
 // GetExpenseCategoryByIdArgs is input parameter for select query "GetExpenseCategoryById".
 type GetExpenseCategoryByIdArgs struct {
 	Id interface{} `db:"id" json:"id"`
@@ -534,20 +437,9 @@ type LoadExpenseArgs struct {
 	ExpenseDate interface{} `db:"expense_date" json:"expenseDate"`
 }
 
-// GetSumExpenseResult contains result of select query "GetSumExpense".
-type GetSumExpenseResult struct {
-	Amount decimal.Decimal `db:"amount" json:"amount"`
-}
-
 // GetSumExpenseArgs is input parameter for select query "GetSumExpense".
 type GetSumExpenseArgs struct {
 	ExpenseDate interface{} `db:"expense_date" json:"expenseDate"`
-}
-
-// LoadPaymentMethodResult contains result of select query "LoadPaymentMethod".
-type LoadPaymentMethodResult struct {
-	Id   int    `db:"id" json:"id"`
-	Name string `db:"name" json:"name"`
 }
 
 // LoadProductCategoryResult contains result of select query "LoadProductCategory".
@@ -661,20 +553,6 @@ type LoadActivePurchaseArgs struct {
 	StartDate interface{} `db:"start_date" json:"startDate"`
 }
 
-// GetPurchaseResult contains result of select query "GetPurchase".
-type GetPurchaseResult struct {
-	Id            int             `db:"id" json:"id"`
-	AccountId     int             `db:"account_id" json:"accountId"`
-	SupplierId    int             `db:"supplier_id" json:"supplierId"`
-	ReceiptDate   time.Time       `db:"receipt_date" json:"receiptDate"`
-	InputTime     time.Time       `db:"input_time" json:"inputTime"`
-	Qty           decimal.Decimal `db:"qty" json:"qty"`
-	TotalPurchase decimal.Decimal `db:"total_purchase" json:"totalPurchase"`
-	PaymentDue    time.Time       `db:"payment_due" json:"paymentDue"`
-	PaidAmount    decimal.Decimal `db:"paid_amount" json:"paidAmount"`
-	PaidDate      time.Time       `db:"paid_date" json:"paidDate"`
-}
-
 // GetPurchaseArgs is input parameter for select query "GetPurchase".
 type GetPurchaseArgs struct {
 	Id interface{} `db:"id" json:"id"`
@@ -706,26 +584,6 @@ type GetPurchaseDetailSumResult struct {
 // GetPurchaseDetailSumArgs is input parameter for select query "GetPurchaseDetailSum".
 type GetPurchaseDetailSumArgs struct {
 	PurchaseId interface{} `db:"purchase_id" json:"purchaseId"`
-}
-
-// LoadStoreResult contains result of select query "LoadStore".
-type LoadStoreResult struct {
-	Id      int    `db:"id" json:"id"`
-	Name    string `db:"name" json:"name"`
-	Phone   string `db:"phone" json:"phone"`
-	Address string `db:"address" json:"address"`
-	City    string `db:"city" json:"city"`
-	Info    string `db:"info" json:"info"`
-}
-
-// GetStoreByIdResult contains result of select query "GetStoreById".
-type GetStoreByIdResult struct {
-	Id      int    `db:"id" json:"id"`
-	Name    string `db:"name" json:"name"`
-	Phone   string `db:"phone" json:"phone"`
-	Address string `db:"address" json:"address"`
-	City    string `db:"city" json:"city"`
-	Info    string `db:"info" json:"info"`
 }
 
 // GetStoreByIdArgs is input parameter for select query "GetStoreById".

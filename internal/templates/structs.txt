@@ -30,15 +30,17 @@ import (
 // Structs for SELECT queries.
 
 	{{range $query := .selectQueries -}}
-		{{$structName := (print (camel $query.Name) "Result") -}}
-		// {{$structName}} contains result of select query "{{$query.Name}}".
-		type {{$structName}} struct {
-			{{range $col := $query.Columns -}}
-				{{$fieldName := camel $col.Name -}}
-				{{$jsonName := lowerCamel $col.Name -}}
-				{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
-			{{end -}}
-		}
+		{{if eq $query.ResultEntity ""}}
+			{{$structName := (print (camel $query.Name) "Result") -}}
+			// {{$structName}} contains result of select query "{{$query.Name}}".
+			type {{$structName}} struct {
+				{{range $col := $query.Columns -}}
+					{{$fieldName := camel $col.Name -}}
+					{{$jsonName := lowerCamel $col.Name -}}
+					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+				{{end -}}
+			}
+		{{end}}
 
 		{{if gt (len $query.Params) 0}}
 			{{$structName := (print (camel $query.Name) "Args") -}}

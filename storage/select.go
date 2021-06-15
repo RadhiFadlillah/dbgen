@@ -8,7 +8,7 @@ import (
 )
 
 // LoadAccount is wrapper for select query "LoadAccount".
-func LoadAccount(acc Accessor, additionalQueries ...string) (res []LoadAccountResult, err error) {
+func LoadAccount(acc Accessor, additionalQueries ...string) (res []Account, err error) {
 	query := sqlLoadAccount
 
 	if len(additionalQueries) > 0 {
@@ -25,7 +25,7 @@ func LoadAccount(acc Accessor, additionalQueries ...string) (res []LoadAccountRe
 }
 
 // GetAccountById is wrapper for select query "GetAccountById".
-func GetAccountById(acc Accessor, namedArgs GetAccountByIdArgs, additionalQueries ...string) (res GetAccountByIdResult, err error) {
+func GetAccountById(acc Accessor, namedArgs GetAccountByIdArgs, additionalQueries ...string) (res Account, err error) {
 	query, args, err := sqlx.Named(sqlGetAccountById, namedArgs)
 	if err != nil {
 		return
@@ -50,7 +50,7 @@ func GetAccountById(acc Accessor, namedArgs GetAccountByIdArgs, additionalQuerie
 }
 
 // GetAccountByUsername is wrapper for select query "GetAccountByUsername".
-func GetAccountByUsername(acc Accessor, namedArgs GetAccountByUsernameArgs, additionalQueries ...string) (res GetAccountByUsernameResult, err error) {
+func GetAccountByUsername(acc Accessor, namedArgs GetAccountByUsernameArgs, additionalQueries ...string) (res Account, err error) {
 	query, args, err := sqlx.Named(sqlGetAccountByUsername, namedArgs)
 	if err != nil {
 		return
@@ -142,7 +142,7 @@ func LoadCorrection(acc Accessor, namedArgs LoadCorrectionArgs, additionalQuerie
 }
 
 // GetCorrectionById is wrapper for select query "GetCorrectionById".
-func GetCorrectionById(acc Accessor, namedArgs GetCorrectionByIdArgs, additionalQueries ...string) (res GetCorrectionByIdResult, err error) {
+func GetCorrectionById(acc Accessor, namedArgs GetCorrectionByIdArgs, additionalQueries ...string) (res Correction, err error) {
 	query, args, err := sqlx.Named(sqlGetCorrectionById, namedArgs)
 	if err != nil {
 		return
@@ -167,7 +167,7 @@ func GetCorrectionById(acc Accessor, namedArgs GetCorrectionByIdArgs, additional
 }
 
 // LoadCustomer is wrapper for select query "LoadCustomer".
-func LoadCustomer(acc Accessor, additionalQueries ...string) (res []LoadCustomerResult, err error) {
+func LoadCustomer(acc Accessor, additionalQueries ...string) (res []Customer, err error) {
 	query := sqlLoadCustomer
 
 	if len(additionalQueries) > 0 {
@@ -226,7 +226,7 @@ func GetDeviceByIdentifier(acc Accessor, namedArgs GetDeviceByIdentifierArgs, ad
 }
 
 // LoadEmployee is wrapper for select query "LoadEmployee".
-func LoadEmployee(acc Accessor, additionalQueries ...string) (res []LoadEmployeeResult, err error) {
+func LoadEmployee(acc Accessor, additionalQueries ...string) (res []Employee, err error) {
 	query := sqlLoadEmployee
 
 	if len(additionalQueries) > 0 {
@@ -293,7 +293,7 @@ func LoadEvent(acc Accessor, namedArgs LoadEventArgs, additionalQueries ...strin
 }
 
 // GetEvent is wrapper for select query "GetEvent".
-func GetEvent(acc Accessor, namedArgs GetEventArgs, additionalQueries ...string) (res GetEventResult, err error) {
+func GetEvent(acc Accessor, namedArgs GetEventArgs, additionalQueries ...string) (res Event, err error) {
 	query, args, err := sqlx.Named(sqlGetEvent, namedArgs)
 	if err != nil {
 		return
@@ -318,7 +318,7 @@ func GetEvent(acc Accessor, namedArgs GetEventArgs, additionalQueries ...string)
 }
 
 // GetProductActiveEvent is wrapper for select query "GetProductActiveEvent".
-func GetProductActiveEvent(acc Accessor, namedArgs GetProductActiveEventArgs, additionalQueries ...string) (res GetProductActiveEventResult, err error) {
+func GetProductActiveEvent(acc Accessor, namedArgs GetProductActiveEventArgs, additionalQueries ...string) (res Event, err error) {
 	query, args, err := sqlx.Named(sqlGetProductActiveEvent, namedArgs)
 	if err != nil {
 		return
@@ -343,7 +343,7 @@ func GetProductActiveEvent(acc Accessor, namedArgs GetProductActiveEventArgs, ad
 }
 
 // GetProductPastEvent is wrapper for select query "GetProductPastEvent".
-func GetProductPastEvent(acc Accessor, namedArgs GetProductPastEventArgs, additionalQueries ...string) (res GetProductPastEventResult, err error) {
+func GetProductPastEvent(acc Accessor, namedArgs GetProductPastEventArgs, additionalQueries ...string) (res Event, err error) {
 	query, args, err := sqlx.Named(sqlGetProductPastEvent, namedArgs)
 	if err != nil {
 		return
@@ -393,7 +393,7 @@ func LoadExpenseCategory(acc Accessor, namedArgs LoadExpenseCategoryArgs, additi
 }
 
 // GetExpenseCategoryById is wrapper for select query "GetExpenseCategoryById".
-func GetExpenseCategoryById(acc Accessor, namedArgs GetExpenseCategoryByIdArgs, additionalQueries ...string) (res GetExpenseCategoryByIdResult, err error) {
+func GetExpenseCategoryById(acc Accessor, namedArgs GetExpenseCategoryByIdArgs, additionalQueries ...string) (res ExpenseCategory, err error) {
 	query, args, err := sqlx.Named(sqlGetExpenseCategoryById, namedArgs)
 	if err != nil {
 		return
@@ -443,7 +443,7 @@ func LoadExpense(acc Accessor, namedArgs LoadExpenseArgs, additionalQueries ...s
 }
 
 // GetSumExpense is wrapper for select query "GetSumExpense".
-func GetSumExpense(acc Accessor, namedArgs GetSumExpenseArgs, additionalQueries ...string) (res GetSumExpenseResult, err error) {
+func GetSumExpense(acc Accessor, namedArgs GetSumExpenseArgs, additionalQueries ...string) (res Expense, err error) {
 	query, args, err := sqlx.Named(sqlGetSumExpense, namedArgs)
 	if err != nil {
 		return
@@ -468,7 +468,7 @@ func GetSumExpense(acc Accessor, namedArgs GetSumExpenseArgs, additionalQueries 
 }
 
 // LoadPaymentMethod is wrapper for select query "LoadPaymentMethod".
-func LoadPaymentMethod(acc Accessor, additionalQueries ...string) (res []LoadPaymentMethodResult, err error) {
+func LoadPaymentMethod(acc Accessor, additionalQueries ...string) (res []PaymentMethod, err error) {
 	query := sqlLoadPaymentMethod
 
 	if len(additionalQueries) > 0 {
@@ -635,7 +635,7 @@ func LoadActivePurchase(acc Accessor, namedArgs LoadActivePurchaseArgs, addition
 }
 
 // GetPurchase is wrapper for select query "GetPurchase".
-func GetPurchase(acc Accessor, namedArgs GetPurchaseArgs, additionalQueries ...string) (res GetPurchaseResult, err error) {
+func GetPurchase(acc Accessor, namedArgs GetPurchaseArgs, additionalQueries ...string) (res Purchase, err error) {
 	query, args, err := sqlx.Named(sqlGetPurchase, namedArgs)
 	if err != nil {
 		return
@@ -710,7 +710,7 @@ func GetPurchaseDetailSum(acc Accessor, namedArgs GetPurchaseDetailSumArgs, addi
 }
 
 // LoadStore is wrapper for select query "LoadStore".
-func LoadStore(acc Accessor, additionalQueries ...string) (res []LoadStoreResult, err error) {
+func LoadStore(acc Accessor, additionalQueries ...string) (res []Store, err error) {
 	query := sqlLoadStore
 
 	if len(additionalQueries) > 0 {
@@ -727,7 +727,7 @@ func LoadStore(acc Accessor, additionalQueries ...string) (res []LoadStoreResult
 }
 
 // GetStoreById is wrapper for select query "GetStoreById".
-func GetStoreById(acc Accessor, namedArgs GetStoreByIdArgs, additionalQueries ...string) (res GetStoreByIdResult, err error) {
+func GetStoreById(acc Accessor, namedArgs GetStoreByIdArgs, additionalQueries ...string) (res Store, err error) {
 	query, args, err := sqlx.Named(sqlGetStoreById, namedArgs)
 	if err != nil {
 		return

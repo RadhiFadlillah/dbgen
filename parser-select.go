@@ -58,7 +58,7 @@ func (p *SqlParser) processSelectQueries(rawQueries []RawQueryData) ([]SelectQue
 		}
 
 		// Find suitable entity to store result.
-		expectedResultEntity := rawQuery.Props["result"]
+		expectedResultEntity := rawQuery.Props["table"]
 		query.ResultEntity = p.findSuitableTable(query.Columns, expectedResultEntity)
 
 		selectQueries = append(selectQueries, query)

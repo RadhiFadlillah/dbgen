@@ -14,7 +14,6 @@ type SqlParser struct {
 	// SrcDir is source directory that contains SQL files.
 	SrcDir string
 
-	mapColumnsCount map[string]int
 	mapColumnsTable map[string][]string
 }
 
@@ -35,7 +34,6 @@ func (p *SqlParser) Parse() (ddlQueries []DdlQueryData, selectQueries []SelectQu
 
 	// Store table columns to map for faster access
 	p.mapColumnsTable = p.mapColumnsToTable(ddlQueries)
-	p.mapColumnsCount = p.mapTableToColumnsCount(ddlQueries)
 
 	// Process select queries
 	selectQueries, err = p.processSelectQueries(rawQueries)

@@ -16,6 +16,10 @@ import (
 	{{$resultType := print $funcName "Result" -}}
 	{{$sqlxFuncArgs := ""}}
 	{{$sqlxFuncName := "Get"}}
+
+	{{if ne $query.ResultEntity ""}}
+		{{$resultType = camel $query.ResultEntity}}
+	{{end}}
 	
 	{{if not $query.SingleResult}}
 		{{$sqlxFuncName = "Select"}}
