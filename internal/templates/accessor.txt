@@ -19,8 +19,6 @@ type Accessor interface {
 	NamedExec(query string, arg interface{}) (sql.Result, error)
 	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
 	NamedQuery(query string, arg interface{}) (*sqlx.Rows, error)
-	NamedStmt(stmt *sqlx.NamedStmt) *sqlx.NamedStmt
-	NamedStmtContext(ctx context.Context, stmt *sqlx.NamedStmt) *sqlx.NamedStmt
 	PrepareNamed(query string) (*sqlx.NamedStmt, error)
 	PrepareNamedContext(ctx context.Context, query string) (*sqlx.NamedStmt, error)
 	Preparex(query string) (*sqlx.Stmt, error)
