@@ -29,9 +29,10 @@ import (
 				namedArgs := map[string]interface{}{
 					"{{$paramName}}": {{lowerCamel $paramName}},
 				}
+
 		{{else -}}
 			func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
-		{{end}}
+		{{end -}}
 
 			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)
 			if err != nil {

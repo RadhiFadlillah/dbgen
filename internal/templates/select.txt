@@ -32,15 +32,17 @@ import (
 	{{if eq (len $query.Params) 0 -}}
 		func {{$funcName}}(acc Accessor, additionalQueries ...string) (res {{$resultType}}, err error) {
 			query := {{$sqlName}}
+
 	{{else if eq (len $query.Params) 1 -}}
 		{{$paramName := (index $query.Params 0).Name -}}
 		func {{$funcName}}(acc Accessor, {{lowerCamel $paramName}} interface{}, additionalQueries ...string) (res {{$resultType}}, err error) {
 			namedArgs := map[string]interface{}{
 				"{{$paramName}}": {{lowerCamel $paramName}},
 			}
+
 	{{else -}}
 		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...string) (res {{$resultType}}, err error) {
-	{{end}}
+	{{end -}}
 
 	{{if gt (len $query.Params) 0 -}}
 		{{$sqlxFuncArgs = ", args..." -}}
@@ -54,6 +56,7 @@ import (
 				return
 			}
 	{{end}}
+
 		if len(additionalQueries) > 0 {
 			query += " " + strings.Join(additionalQueries, " ")
 		}
