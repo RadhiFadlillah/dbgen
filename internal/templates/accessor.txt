@@ -45,6 +45,6 @@ func isEmpty(i interface{}) bool {
 	case time.Time:
 		return val.IsZero()
 	default:
-		return reflect.ValueOf(x).IsZero()
+		return reflect.ValueOf(val).IsZero()
 	}
 }
