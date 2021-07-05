@@ -13,7 +13,7 @@ import (
 
 {{range $query := .selectQueries -}}
 	{{$funcName := camel $query.Name -}}
-	{{$sqlName := print "sql" $funcName -}}
+	{{$sqlName := print "Sql" $funcName -}}
 	{{$argsType := print $funcName "Args" -}}
 	{{$resultType := print $funcName "Result" -}}
 	{{$sqlxFuncArgs := ""}}
@@ -73,7 +73,7 @@ import (
 
 {{range $query := .selectQueries -}}
 	{{$funcName := camel $query.Name -}}
-	{{$sqlName := print "sql" $funcName -}}
+	{{$sqlName := print "Sql" $funcName -}}
 	// Stmt{{$funcName}} is used to prepare select query "{{$query.Name}}".
 	func Stmt{{$funcName}}(acc Accessor) (*sqlx.NamedStmt, error) {
 		return acc.PrepareNamed({{$sqlName}})
@@ -81,7 +81,9 @@ import (
 {{end}}
 
 {{range $query := .selectQueries -}}
-const sql{{camel $query.Name}} = `
+{{$sqlName := print "Sql" (camel $query.Name) -}}
+// {{$sqlName}} is the raw SQL query for "{{$query.Name}}".
+const {{$sqlName}} = `
 {{$query.SQL}}`
 
 {{end}}
