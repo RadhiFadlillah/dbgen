@@ -67,6 +67,11 @@ func (g *Generator) Run() error {
 		return fmt.Errorf("failed to generate code for opening db: %v", err)
 	}
 
+	err = g.generateInterfaces()
+	if err != nil {
+		return fmt.Errorf("failed to generate code for interfaces: %v", err)
+	}
+
 	err = g.generateStructs()
 	if err != nil {
 		return fmt.Errorf("failed to generate code for structs: %v", err)
@@ -104,6 +109,22 @@ func (g *Generator) generateOpenDatabase() error {
 		"package":    g.PackageName,
 		"ddlQueries": g.DdlQueries,
 	})
+}
+
+// generateInterfaces generates code for interfaces.
+func (g *Generator) generateInterfaces() error {
+	logrus.Println("generate code for interfaces")
+
+	templateData := map[string]interface{}{
+		"package":           g.PackageName,
+		"ddlQueries":        g.DdlQueries,
+		"selectQueries":     g.SelectQueries,
+		"execQueries":       g.ExecQueries,
+		"additionalImports": g.AdditionalImports,
+	}
+
+	dstPath := fp.Join(g.DstDir, "interfaces.go")
+	return g.writeCode(dstPath, "interfaces.txt", templateData)
 }
 
 // generateStructs generates code for structs.

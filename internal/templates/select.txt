@@ -14,7 +14,7 @@ import (
 {{range $query := .selectQueries -}}
 	{{$funcName := camel $query.Name -}}
 	{{$sqlName := print "Sql" $funcName -}}
-	{{$argsType := print $funcName "Args" -}}
+	{{$argsType := print "Itf" $funcName "Args" -}}
 	{{$resultType := print $funcName "Result" -}}
 	{{$sqlxFuncArgs := ""}}
 	{{$sqlxFuncName := "Get"}}
@@ -41,7 +41,7 @@ import (
 			}
 
 	{{else -}}
-		func {{$funcName}}(acc Accessor, namedArgs interface{}, additionalQueries ...string) (res {{$resultType}}, err error) {
+		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...string) (res {{$resultType}}, err error) {
 	{{end -}}
 
 	{{if gt (len $query.Params) 0 -}}
