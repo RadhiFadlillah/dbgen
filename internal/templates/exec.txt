@@ -39,7 +39,7 @@ import (
 				}
 
 		{{else -}}
-			func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}) (sql.Result, error) {
+			func {{$funcName}}(acc Accessor, namedArgs interface{}) (sql.Result, error) {
 				{{range $param := $query.Params -}}
 				{{if $param.Required -}}
 					{{$paramName := camel $param.Name -}}

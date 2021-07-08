@@ -41,7 +41,7 @@ import (
 			}
 
 	{{else -}}
-		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...string) (res {{$resultType}}, err error) {
+		func {{$funcName}}(acc Accessor, namedArgs interface{}, additionalQueries ...string) (res {{$resultType}}, err error) {
 	{{end -}}
 
 	{{if gt (len $query.Params) 0 -}}
