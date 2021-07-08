@@ -6,6 +6,7 @@ var (
 	rxQueryProps  = regexp.MustCompile(`(?i)([^\s:,]+)\s*:\s*([^\s:,]+)`)
 	rxQueryParams = regexp.MustCompile(`(?i)([!:]{1,2})([\w_\d]+)`)
 	rxTableName   = regexp.MustCompile(`(?i)CREATE\s+(?:TEMPORARY\s+)?TABLE\s+(?:IF\s+(?:NOT\s+)?EXISTS\s+)?(\S+)`)
+	rxSqlVariable = regexp.MustCompile(`(?i)var\(([^)]+)\)`)
 )
 
 const sqlEnableForeignKey = `SET FOREIGN_KEY_CHECKS = 1`

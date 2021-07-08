@@ -30,6 +30,18 @@ func (q QueryType) Name() string {
 	}
 }
 
+// SqlVariable is the data of variable which parsed from SQL file.
+type SqlVariable struct {
+	// Name is the name of variable.
+	Name string
+	// SQL is the raw SQL query.
+	SQL string
+	// SourceFile is the file where this variable declared.
+	SourceFile string
+	// SourceLine is the line number where this variable declared.
+	SourceLine int
+}
+
 // RawQueryData is the basic data which parsed from SQL file.
 type RawQueryData struct {
 	// Type is the type of query.

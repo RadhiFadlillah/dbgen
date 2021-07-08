@@ -19,6 +19,26 @@ func (p *SqlParser) parseSqlFiles() ([]RawQueryData, error) {
 		return nil, err
 	}
 
+	// Look for variables
+	uniqueVariables := make(map[string]SqlVariable)
+
+	for _, sqlFile := range sqlFiles {
+		variables, err := p.parseVariable(sqlFile)
+		if err != nil {
+			return nil, err
+		}
+
+		// Make sure each query only defined once
+		for _, variable := range variables {
+			if _, exist := uniqueVariables[variable.Name]; exist {
+				variableSource := fmt.Sprintf("%s:%d", variable.SourceFile, variable.SourceLine)
+				return nil, fmt.Errorf("variable %s redefined in %s", variable.Name, variableSource)
+			}
+
+			uniqueVariables[variable.Name] = variable
+		}
+	}
+
 	// Parse each SQL file
 	var rawQueries []RawQueryData
 	uniqueQueries := make(map[string]struct{})
@@ -36,13 +56,100 @@ func (p *SqlParser) parseSqlFiles() ([]RawQueryData, error) {
 				querySource := fmt.Sprintf("%s:%d", query.SourceFile, query.SourceLine)
 				return nil, fmt.Errorf("%s redefined in %s", query.Name, querySource)
 			}
-
 			uniqueQueries[queryName] = struct{}{}
+
+			// Replace variables in query
+			var variableErr error
+			query.SQL = rxSqlVariable.ReplaceAllStringFunc(query.SQL, func(s string) string {
+				parts := rxSqlVariable.FindStringSubmatch(s)
+				if variable, exist := uniqueVariables[parts[1]]; exist {
+					return variable.SQL
+				}
+
+				variableErr = fmt.Errorf("variable %s is not defined", parts[1])
+				return s
+			})
+
+			if variableErr != nil {
+				return nil, variableErr
+			}
+
 			rawQueries = append(rawQueries, query)
 		}
 	}
 
 	return rawQueries, nil
+}
+
+func (p *SqlParser) parseVariable(path string) ([]SqlVariable, error) {
+	// Open file
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// Prepare results
+	var variable SqlVariable
+	var allVariables []SqlVariable
+	sqlBuffer := bytes.NewBuffer(nil)
+
+	// Scan file line by line
+	var lineNumber int
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		// Fetch the line
+		lineNumber++
+		line := scanner.Text()
+
+		// If line is SQL comment, need special care
+		if strings.HasPrefix(line, "--") {
+			// If SQL buffer not empty, save it first
+			if variable.Name != "" && sqlBuffer.Len() > 0 {
+				sql := sqlBuffer.String()
+				sql = strings.TrimSpace(sql)
+				sql = strings.TrimSuffix(sql, ";")
+
+				variable.SQL = sql
+				allVariables = append(allVariables, variable)
+			}
+
+			// Clean current data
+			sqlBuffer.Reset()
+			variable = SqlVariable{
+				SourceFile: path,
+				SourceLine: lineNumber,
+			}
+
+			// Find name of the variable
+			for _, parts := range rxQueryProps.FindAllStringSubmatch(line, -1) {
+				if parts[1] == "var" {
+					variable.Name = parts[2]
+					break
+				}
+			}
+
+			continue
+		}
+
+		// If it's not comment and name specified, put line to buffer
+		if variable.Name != "" {
+			sqlBuffer.WriteString(line + "\n")
+		}
+	}
+
+	// Save the last variable if exists
+	if variable.Name != "" && sqlBuffer.Len() > 0 {
+		sql := sqlBuffer.String()
+		sql = strings.TrimSpace(sql)
+		sql = strings.TrimSuffix(sql, ";")
+
+		variable.SQL = sql
+		allVariables = append(allVariables, variable)
+	}
+
+	return allVariables, nil
 }
 
 func (p *SqlParser) parseSqlFile(path string) ([]RawQueryData, error) {
