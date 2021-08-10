@@ -10,6 +10,13 @@ import (
 	{{end -}}
 )
 
+// AdditionalQueries is the additional queries and arguments which used
+// when fetching data.
+type AdditionalQueries struct {
+	SQL  string
+	Args []interface{}
+}
+
 {{if gt (len .ddlQueries) 0}}
 // Structs for DDL queries.
 

@@ -16,7 +16,6 @@ import (
 	{{$sqlName := print "Sql" $funcName -}}
 	{{$argsType := print "Itf" $funcName "Args" -}}
 	{{$resultType := print $funcName "Result" -}}
-	{{$sqlxFuncArgs := ""}}
 	{{$sqlxFuncName := "Get"}}
 
 	{{if ne $query.ResultEntity ""}}
@@ -30,22 +29,23 @@ import (
 	
 	// {{$funcName}} is wrapper for select query "{{$query.Name}}".
 	{{if eq (len $query.Params) 0 -}}
-		func {{$funcName}}(acc Accessor, additionalQueries ...string) (res {{$resultType}}, err error) {
+		func {{$funcName}}(acc Accessor, additionalQueries ...AdditionalQueries) (res {{$resultType}}, err error) {
 			query := {{$sqlName}}
 
 	{{else if eq (len $query.Params) 1 -}}
 		{{$paramName := (index $query.Params 0).Name -}}
-		func {{$funcName}}(acc Accessor, {{lowerCamel $paramName}} interface{}, additionalQueries ...string) (res {{$resultType}}, err error) {
+		func {{$funcName}}(acc Accessor, {{lowerCamel $paramName}} interface{}, additionalQueries ...AdditionalQueries) (res {{$resultType}}, err error) {
 			namedArgs := map[string]interface{}{
 				"{{$paramName}}": {{lowerCamel $paramName}},
 			}
 
 	{{else -}}
-		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...string) (res {{$resultType}}, err error) {
+		func {{$funcName}}(acc Accessor, namedArgs {{$argsType}}, additionalQueries ...AdditionalQueries) (res {{$resultType}}, err error) {
 	{{end -}}
 
-	{{if gt (len $query.Params) 0 -}}
-		{{$sqlxFuncArgs = ", args..." -}}
+	{{if eq (len $query.Params) 0 -}}
+			var args []interface{}
+	{{else if gt (len $query.Params) 0 -}}
 			query, args, err := sqlx.Named({{$sqlName}}, namedArgs)
 			if err != nil {
 				return
@@ -57,11 +57,12 @@ import (
 			}
 	{{end}}
 
-		if len(additionalQueries) > 0 {
-			query += " " + strings.Join(additionalQueries, " ")
+		for _, additionalQuery := range additionalQueries {
+			query += " " + additionalQuery.SQL
+			args = append(args, additionalQuery.Args...)
 		}
 
-		err = acc.{{$sqlxFuncName}}(&res, query {{$sqlxFuncArgs}})
+		err = acc.{{$sqlxFuncName}}(&res, query, args...)
 		if err != nil && err != sql.ErrNoRows {
 			return
 		}
