@@ -10,6 +10,23 @@ import (
 	{{end -}}
 )
 
+{{if gt (len .ddlQueries) 0}}
+// Interfaces for generated tables.
+
+	{{range $query := .ddlQueries -}}
+		{{if gt (len $query.Columns) 0}}
+			{{$interfaceName := (print "Itf" (camel $query.TableName)) -}}
+			// {{$interfaceName}} is interface for table "{{$query.TableName}}".
+			type {{$interfaceName}} interface {
+				{{range $col := $query.Columns -}}
+					{{$funcName := print "Get" (camel $col.Name) -}}
+					{{$funcName}}() interface{}
+				{{end -}}
+			}
+		{{end}}
+	{{end}}
+{{end}}
+
 {{if gt (len .selectQueries) 0}}
 // Interfaces for SELECT queries.
 
