@@ -59,7 +59,7 @@ import (
 			{{if useIn $query.SQL -}}
 				query, args, err = sqlx.In(query, args...)
 				if err != nil {
-					return
+					return nil, err
 				}
 			{{end}}
 
