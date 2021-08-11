@@ -31,6 +31,15 @@ type AdditionalQueries struct {
 					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
 				{{end -}}
 			}
+
+			{{range $col := $query.Columns -}}
+				{{$fieldName := camel $col.Name -}}
+				{{$funcName := print "Get" $fieldName -}}
+				func (s {{$structName}}) {{$funcName}}() interface{} {
+					return s.{{$fieldName}}
+				}
+
+			{{end -}}
 		{{end}}
 	{{end}}
 {{end}}
