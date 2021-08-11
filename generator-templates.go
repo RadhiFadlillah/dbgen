@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
 )
+
+var rxIn = regexp.MustCompile(`(?i)\sIN\s`)
 
 func (g *Generator) prepareTemplates() (err error) {
 	globPattern := "internal/templates/*.txt"
@@ -23,6 +26,9 @@ func (g *Generator) prepareTemplates() (err error) {
 				return col.ScanType
 			}
 			return g.ColumnTypeConverter(col)
+		},
+		"useIn": func(sql string) bool {
+			return rxIn.MatchString(sql)
 		},
 	}
 

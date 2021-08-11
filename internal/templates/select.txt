@@ -51,10 +51,12 @@ import (
 				return
 			}
 
-			query, args, err = sqlx.In(query, args...)
-			if err != nil {
-				return
-			}
+			{{if useIn $query.SQL -}}
+				query, args, err = sqlx.In(query, args...)
+				if err != nil {
+					return
+				}
+			{{end}}
 	{{end}}
 
 		for _, additionalQuery := range additionalQueries {

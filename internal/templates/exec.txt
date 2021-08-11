@@ -56,10 +56,12 @@ import (
 				return nil, err
 			}
 
-			query, args, err = sqlx.In(query, args...)
-			if err != nil {
-				return nil, err
-			}
+			{{if useIn $query.SQL -}}
+				query, args, err = sqlx.In(query, args...)
+				if err != nil {
+					return
+				}
+			{{end}}
 
 			return acc.Exec(query, args...)
 		}
