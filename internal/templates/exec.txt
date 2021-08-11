@@ -61,7 +61,7 @@ import (
 				return nil, err
 			}
 
-			return acc.Exec(query)
+			return acc.Exec(query, args...)
 		}
 	{{end}}
 {{end}}
