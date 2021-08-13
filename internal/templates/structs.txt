@@ -27,8 +27,7 @@ type AdditionalQueries struct {
 			type {{$structName}} struct {
 				{{range $col := $query.Columns -}}
 					{{$fieldName := camel $col.Name -}}
-					{{$jsonName := lowerCamel $col.Name -}}
-					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$col.Name}}"`
 				{{end -}}
 			}
 
@@ -54,8 +53,7 @@ type AdditionalQueries struct {
 			type {{$structName}} struct {
 				{{range $col := $query.Columns -}}
 					{{$fieldName := camel $col.Name -}}
-					{{$jsonName := lowerCamel $col.Name -}}
-					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+					{{$fieldName}} {{columnType $col}} `db:"{{$col.Name}}" json:"{{$col.Name}}"`
 				{{end -}}
 			}
 		{{end}}
@@ -66,8 +64,7 @@ type AdditionalQueries struct {
 			type {{$structName}} struct {
 				{{range $col := $query.Params -}}
 					{{$fieldName := camel $col.Name -}}
-					{{$jsonName := lowerCamel $col.Name -}}
-					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$col.Name}}"`
 				{{end -}}
 			}
 
@@ -93,8 +90,7 @@ type AdditionalQueries struct {
 			type {{$structName}} struct {
 				{{range $col := $query.Params -}}
 					{{$fieldName := camel $col.Name -}}
-					{{$jsonName := lowerCamel $col.Name -}}
-					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$jsonName}}"`
+					{{$fieldName}} interface{} `db:"{{$col.Name}}" json:"{{$col.Name}}"`
 				{{end -}}
 			}
 
