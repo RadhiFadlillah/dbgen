@@ -50,10 +50,13 @@ func (p *SqlParser) processSelectQueries(rawQueries []RawQueryData) ([]SelectQue
 
 		// Save columns for this query
 		for _, col := range columns {
+			// For select query, dbgen can't verify whether a column is nullable
+			// or not, so for safety we just assume that it's always nullable.
 			query.Columns = append(query.Columns, Column{
 				Name:     col.Name(),
 				DbType:   col.DatabaseTypeName(),
 				ScanType: col.ScanType().String(),
+				Nullable: true,
 			})
 		}
 
