@@ -64,6 +64,7 @@ import (
 			args = append(args, additionalQuery.Args...)
 		}
 
+		res = {{$resultType}}{}
 		err = acc.{{$sqlxFuncName}}(&res, query, args...)
 		if err != nil && err != sql.ErrNoRows {
 			return
