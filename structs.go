@@ -4,8 +4,10 @@ package dbgen
 type QueryType uint8
 
 const (
+	// UNKNOWN is the default type
+	UNKNOWN QueryType = iota
 	// DDL is query for creating table.
-	DDL QueryType = iota + 1
+	DDL
 	// SELECT is query for fetching several rows at once.
 	SELECT
 	// GET is query for fetching single row result.

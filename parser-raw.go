@@ -177,7 +177,7 @@ func (p *SqlParser) parseSqlFile(path string) ([]RawQueryData, error) {
 		// If line is SQL comment, need special care
 		if strings.HasPrefix(line, "--") {
 			// If query props is specified and SQL buffer not empty, save it first
-			if len(query.Props) > 0 && sqlBuffer.Len() > 0 {
+			if query.Type != UNKNOWN && len(query.Props) > 0 && sqlBuffer.Len() > 0 {
 				sql := sqlBuffer.String()
 				sql = strings.TrimSpace(sql)
 				sql = strings.TrimSuffix(sql, ";")
